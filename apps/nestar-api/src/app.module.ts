@@ -5,16 +5,20 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ApolloDriver } from '@nestjs/apollo';
 import { AppResolver } from './app.resolver';
+import { ComponentsModule } from './components/components.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot(),
 		GraphQLModule.forRoot({
-			driver: ApolloDriver,
+			driver : ApolloDriver,
 			playground: true,
 			uploads: false,
 			autoSchemaFile: true,
 		}),
+		ComponentsModule,
+		DatabaseModule,
 	],
 	controllers: [AppController],
 	providers: [AppService, AppResolver],
