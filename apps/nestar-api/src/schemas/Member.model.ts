@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 import { MemberAuthType, MemberStatus, MemberType } from "../libs/enums/member.enum";
 
-const MemberModule = new Schema(
+const MemberSchema = new Schema(
     {
         memberType: {
             type: String,
@@ -117,3 +117,5 @@ const MemberModule = new Schema(
 
     } ,{ timestamps: true, collection: 'members'},
 );
+
+export default MemberSchema;
