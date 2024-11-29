@@ -18,6 +18,7 @@ import { DatabaseModule } from './database/database.module';
 			autoSchemaFile: true,
 		}),
 		ComponentsModule,
+    
 		DatabaseModule,
 	],
 	controllers: [AppController],
