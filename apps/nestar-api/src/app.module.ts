@@ -33,4 +33,4 @@ import { T } from './libs/types/common';
 	controllers: [AppController],
 	providers: [AppService, AppResolver],
 })
-export class AppModule {}
+export class AppModule {} 
