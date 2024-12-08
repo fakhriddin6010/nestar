@@ -17,10 +17,10 @@ export class Member {
 	memberAuthType: MemberAuthType;
 
 	@Field(() => String)
-	memberPhone: String;
+	memberPhone: string;
 
 	@Field(() => String)
-	memberNick: String;
+	memberNick: string;
 
 	memberPassword?: string;
 

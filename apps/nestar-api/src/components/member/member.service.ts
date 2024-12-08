@@ -3,20 +3,24 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { Member } from '../../libs/dto/member/member';
 import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
+import { MemberUpdate } from '../../libs/dto/member/member.update';
 import { Message } from '../../libs/enums/common.enum';
 import { MemberStatus } from '../../libs/enums/member.enum';
+import { T } from '../../libs/types/common';
 import { AuthService } from '../auth/auth.service';
-import { MemberUpdate } from '../../libs/dto/member/member.update';
 
 @Injectable()
 export class MemberService {
-	constructor(@InjectModel('Member') private readonly memberModel: Model<Member>, private authService: AuthService,) {}
+	constructor(
+		@InjectModel('Member') private readonly memberModel: Model<Member>,
+		private authService: AuthService,
+	) {}
 
 	public async signup(input: MemberInput): Promise<Member> {
 		// TODO: Hash password
-		input.memberPassword = await this.authService.hashPassword(input.memberPassword)
+		input.memberPassword = await this.authService.hashPassword(input.memberPassword);
 		try {
-			const result = await this.memberModel.create(input); 
+			const result = await this.memberModel.create(input);
 			result.accessToken = await this.authService.createToken(result);
 			//TODO: Authentication va TOKEN
 			return result;
@@ -40,25 +44,35 @@ export class MemberService {
 
 		// TODO: Compare passwords
 
-		const isMatch = await this.authService.comparePasswords(input.memberPassword, response.memberPassword)
+		const isMatch = await this.authService.comparePasswords(input.memberPassword, response.memberPassword);
 		if (!isMatch) throw new InternalServerErrorException(Message.WRONG_PASSWORD);
-		response.accessToken = await this.authService.createToken(response)
+		response.accessToken = await this.authService.createToken(response);
 
 		return response;
 	}
 
 	public async updateMember(memberId: ObjectId, input: MemberUpdate): Promise<Member> {
-		const result: Member = await this.memberModel.findOneAndUpdate({_id: memberId,
-			memberStatus: MemberStatus.ACTIVE,
-		}, input, {new: true},).exec();
-		if(!result) throw new InternalServerErrorException(Message.UPLOAD_FAILED);
+		const result: Member = await this.memberModel
+			.findOneAndUpdate({ _id: memberId, memberStatus: MemberStatus.ACTIVE }, input, { new: true })
+			.exec();
+		if (!result) throw new InternalServerErrorException(Message.UPLOAD_FAILED);
 		result.accessToken = await this.authService.createToken(result);
 
 		return result;
 	}
 
-	public async getMember(): Promise<string> {
-		return 'getMember executed';
+	public async getMember(targetId: ObjectId): Promise<Member> {
+		const search: T = {
+			_id: targetId,
+			memberStatus: {
+				// $in -MongoDB operatori bo‘lib, u qiymatning kiritilgan massiv ichida borligini tekshiradi.
+				$in: [MemberStatus.ACTIVE, MemberStatus.BLOCK],
+			},
+		};
+		const targetMember = await this.memberModel.findOne(search).exec();
+		if (!targetMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		return targetMember;
 	}
 
 	public async getAllMembersByAdmin(): Promise<string> {
