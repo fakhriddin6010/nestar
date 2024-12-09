@@ -31,6 +31,6 @@ import { T } from './libs/types/common';
 		DatabaseModule,
 	],
 	controllers: [AppController],
-	providers: [AppService, AppResolver],
+	providers: [AppService, AppResolver,],
 })
 export class AppModule {} 

@@ -20,35 +20,34 @@ export class MemberUpdate {
 	// @IsNotEmpty() // bu bolishi majbur bolgan malumot
 	@IsOptional()
 	@Length(3, 12)
-	@Field(() => String,{ nullable: true }) // graphQL ga tanishtiryamz
+	@Field(() => String, {nullable: true}) // graphQL ga tanishtiryamz
 	memberNick?: string; // ts typeni korsatyabmz va bolishi ham mumkun yoki yoq
 
 	@IsOptional()
-	@Field(() => String ,{ nullable: true })
+	@Field(() => String, { nullable: true })
 	memberPhone?: string;
 
 	@IsOptional()
 	@Length(5, 12)
-	@Field(() => String , {nullable: true})
+	@Field(() => String, { nullable: true })
 	memberPassword?: string;
 
 	@IsOptional()
 	@Length(3, 100)
-	@Field(() => String , {nullable: true})
+	@Field(() => String, { nullable: true })
 	memberFulName?: string;
 
 	@IsOptional()
-	@Field(() => String , {nullable: true})
+	@Field(() => String, { nullable: true })
 	memberImage?: string;
 
-	
 	@IsOptional()
-	@Field(() => String , {nullable: true})
+	@Field(() => String, { nullable: true })
 	memberAddress?: string;
 
 	@IsOptional()
 	@Field(() => String, { nullable: true })
-	memberDesc: string;
+	memberDesc?: string;
 
-	deleteAt?:Date;
+	deleteAt?: Date;
 }
