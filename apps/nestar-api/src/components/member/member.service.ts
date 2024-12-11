@@ -7,7 +7,7 @@ import { MemberUpdate } from '../../libs/dto/member/member.update';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { MemberStatus, MemberType } from '../../libs/enums/member.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
-import { T } from '../../libs/types/common';
+import { StatisticModifier, T } from '../../libs/types/common';
 import { AuthService } from '../auth/auth.service';
 import { ViewService } from '../view/view.service';
 
@@ -123,7 +123,7 @@ export class MemberService {
 		if (memberType) match.memberType = memberType;
 		if (text) match.memberNick = { $regex: new RegExp(text, 'i') };
 		console.log('match:', match);
-		console.log('sort',sort)
+		console.log('sort', sort);
 		const result = await this.memberModel
 			.aggregate([
 				{ $match: match },
@@ -138,13 +138,20 @@ export class MemberService {
 			.exec();
 
 		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-			console.log('result',result)
+		console.log('result', result);
 		return result[0];
 	}
 
 	public async updateMemberByAdmin(input: MemberUpdate): Promise<Member> {
-		const result: Member = await this.memberModel.findOneAndUpdate({_id: input._id}, input, {new: true}).exec();
+		const result: Member = await this.memberModel.findOneAndUpdate({ _id: input._id }, input, { new: true }).exec();
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 		return result;
+	}
+
+	public async memberStatusEditor(input: StatisticModifier): Promise<Member> {
+		console.log('executed=>');
+		const { _id, targetKey, modifier } = input;
+		return await this.memberModel
+		.findOneAndUpdate(_id, { $inc: { [targetKey]: modifier } }, { new: true }).exec();
 	}
 }
