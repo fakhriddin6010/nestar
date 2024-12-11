@@ -119,11 +119,11 @@ export class MemberService {
 		const match: T = {};
 		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
-		if (memberStatus) match.memberStatus = MemberStatus;
-		if (memberType) match.memberType = MemberType;
+		if (memberStatus) match.memberStatus = memberStatus;
+		if (memberType) match.memberType = memberType;
 		if (text) match.memberNick = { $regex: new RegExp(text, 'i') };
 		console.log('match:', match);
-
+		console.log('sort',sort)
 		const result = await this.memberModel
 			.aggregate([
 				{ $match: match },
@@ -136,8 +136,9 @@ export class MemberService {
 				},
 			])
 			.exec();
-		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
+		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+			console.log('result',result)
 		return result[0];
 	}
 
