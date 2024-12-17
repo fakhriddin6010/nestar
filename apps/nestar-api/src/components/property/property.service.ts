@@ -44,7 +44,7 @@ export class PropertyService {
 	public async getProperty(memberId: ObjectId, propertyId: ObjectId): Promise<Property> {
 		const search = {
 			_id: propertyId,
-			propertyStatus: PropertyStatus.ACTIVE,
+			propertyStatus: PropertyStatus.ACTIVE, // Faqat "ACTIVE" holatdagi property-ni topadi.
 		};
 		console.log('id>', propertyId);
 		const targetProperty: Property = await this.propertyModel.findOne(search).lean<Property>().exec();
@@ -52,6 +52,10 @@ export class PropertyService {
 
 		if (memberId) {
 			const viewInput = { memberId: memberId, viewRefId: propertyId, viewGroup: ViewGroup.PROPERTY };
+			/* memberId: Ko'rishni amalga oshirayotgan foydalanuvchi ID-si.
+            viewRefId: Ko'rilgan property ID-si.
+            viewGroup: Ko'rish guruhini PROPERTY qilib belgilaydi.
+            recordView: viewService orqali ko'rishlarni yozib qo'yadi. */
 			const newView = await this.viewService.recordView(viewInput);
 			if (newView) {
 				await this.propertyStatsEditor({ _id: propertyId, targetKey: 'propertyViews', modifier: 1 });
@@ -110,7 +114,7 @@ export class PropertyService {
 				{ $match: match },
 				{ $sort: sort },
 				{
-					$facet: {
+					$facet: { // Ma'lumotlarni ikki qismga ajratadi:
 						list: [
 							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
@@ -257,12 +261,11 @@ export class PropertyService {
 		return result;
 	}
 
-    public async removePropertyByAdmin(propertyId: ObjectId): Promise<Property> {
-        const search: T = { _id: propertyId, propertyStatus: PropertyStatus.DELETE };
-        const result = await this.propertyModel.findOneAndDelete(search).exec();
-        if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
-      
-        return result;
-      }
-      
+	public async removePropertyByAdmin(propertyId: ObjectId): Promise<Property> {
+		const search: T = { _id: propertyId, propertyStatus: PropertyStatus.DELETE };
+		const result = await this.propertyModel.findOneAndDelete(search).exec();
+		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
+
+		return result;
+	}
 }
