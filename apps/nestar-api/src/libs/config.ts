@@ -15,7 +15,7 @@ export const availablePropertySorts = [
 ];
 
 export const availableArticleSort = ['createdAt', 'updatedAt', 'articleLikes','articleViews']
-
+export const availableCommentSorts= ['createdAt', 'updatedAt']
 /** IMAGE CONFIGURATION **/
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
