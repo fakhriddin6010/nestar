@@ -5,6 +5,7 @@ import { AuthModule } from '../auth/auth.module';
 import { MemberResolver } from './member.resolver';
 import { MemberService } from './member.service';
 import { ViewModule } from '../view/view.module';
+import { LikeModule } from '../like/like.module';
 
 @Module({
 	imports: [MongooseModule.forFeature([
@@ -12,6 +13,7 @@ import { ViewModule } from '../view/view.module';
 	]),
 	 AuthModule, 
 	 ViewModule,
+	 LikeModule,
 	],
 	providers: [MemberResolver, MemberService],
 	exports: [MemberService]
