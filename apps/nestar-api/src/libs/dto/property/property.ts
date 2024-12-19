@@ -2,6 +2,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
 import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
 import { Member, TotalCounter } from '../member/member';
+import { MeLiked } from '../like/like';
 
 @ObjectType()
 export class Property {
@@ -62,32 +63,34 @@ export class Property {
 	@Field(() => String)
 	memberId: ObjectId;
 
-	@Field(() => Date, {nullable: true})
+	@Field(() => Date, { nullable: true })
 	soldAt?: Date;
 
-	
-	@Field(() => Date, {nullable: true})
+	@Field(() => Date, { nullable: true })
 	deletedAt?: Date;
 
-	
-	@Field(() => Date, {nullable: true})
+	@Field(() => Date, { nullable: true })
 	constructedAt?: Date;
-	
+
 	@Field(() => Date)
 	createdAt: Date;
 
 	@Field(() => Date)
 	updatedAt: Date;
 
-	@Field(() => Member, {nullable: true})
-	memberData?: Member
+	@Field(() => Member, { nullable: true })
+	memberData?: Member;
+
+	/* from*/
+	@Field(() => [MeLiked], { nullable: true })
+	meLiked?: MeLiked[];
 }
 
 @ObjectType()
 export class Properties {
-  @Field(() => [Property])
-  list: Property[];
+	@Field(() => [Property])
+	list: Property[];
 
-  @Field(() => [TotalCounter], { nullable: true })
-  metaCounter: TotalCounter[];
+	@Field(() => [TotalCounter], { nullable: true })
+	metaCounter: TotalCounter[];
 }
