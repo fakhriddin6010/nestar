@@ -127,8 +127,8 @@ export class MemberService {
 		if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		const input: LikeInput = {
-			memberId: memberId,
-			likeRefId: likeRefId,
+			memberId: memberId,  // memberId → Foydalanuvchi "like" ni qo‘shayotgan shaxs.
+			likeRefId: likeRefId, // likeRefId → Qaysi foydalanuvchiga "like" qo‘shilmoqda.
 			likeGroup: LikeGroup.MEMBER,
 		};
 
