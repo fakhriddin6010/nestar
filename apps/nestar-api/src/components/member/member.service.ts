@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
+import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { Member, Members } from '../../libs/dto/member/member';
 import { AgentsInquiry, LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
@@ -13,7 +14,7 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { AuthService } from '../auth/auth.service';
 import { LikeService } from '../like/like.service';
 import { ViewService } from '../view/view.service';
-import { Follower, Following, MeFollowed } from '../../libs/dto/follow/follow';
+import { lookupAuthMemberLiked } from '../../libs/config';
 
 @Injectable()
 export class MemberService {
@@ -100,9 +101,9 @@ export class MemberService {
 		return targetMember;
 	}
 
-	private async checkSubscription(followerId: ObjectId, followingId:ObjectId):Promise<MeFollowed[]>{
-		const result = await this.followModel.findOne({ followingId: followingId, followerId: followerId}).exec();
-		return result ? [{ followerId: followerId, followingId: followingId, myFollowing: true}] : [];
+	private async checkSubscription(followerId: ObjectId, followingId: ObjectId): Promise<MeFollowed[]> {
+		const result = await this.followModel.findOne({ followingId: followingId, followerId: followerId }).exec();
+		return result ? [{ followerId: followerId, followingId: followingId, myFollowing: true }] : [];
 	}
 
 	public async getAgents(memberId: ObjectId, input: AgentsInquiry): Promise<Members> {
@@ -119,7 +120,11 @@ export class MemberService {
 				{ $sort: sort },
 				{
 					$facet: {
-						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
+						list: [
+							{ $skip: (input.page - 1) * input.limit }, 
+							{ $limit: input.limit },
+							lookupAuthMemberLiked(memberId),
+						],
 						metaCounter: [{ $count: 'total' }],
 					},
 				},
@@ -137,7 +142,7 @@ export class MemberService {
 		if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		const input: LikeInput = {
-			memberId: memberId,  // memberId → Foydalanuvchi "like" ni qo‘shayotgan shaxs.
+			memberId: memberId, // memberId → Foydalanuvchi "like" ni qo‘shayotgan shaxs.
 			likeRefId: likeRefId, // likeRefId → Qaysi foydalanuvchiga "like" qo‘shilmoqda.
 			likeGroup: LikeGroup.MEMBER,
 		};
@@ -183,7 +188,6 @@ export class MemberService {
 		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 		return result;
 	}
-
 
 	public async memberStatusEditor(input: StatisticModifier): Promise<Member> {
 		console.log('executed=>');
