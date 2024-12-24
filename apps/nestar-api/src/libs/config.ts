@@ -46,8 +46,7 @@ export const lookupAuthMemberLiked = (memberId: T, targetRefId: string = '$_id')
 				{
 					$match: {
 						$expr: {
-							$and: [{ $eq: ['$likeRefId', '$$localLikeRefId'] },
-							{ $eq: ['$memberId', '$$localMemberId'] }],
+							$and: [{ $eq: ['$likeRefId', '$$localLikeRefId'] }, { $eq: ['$memberId', '$$localMemberId'] }],
 						},
 					},
 				},
@@ -65,12 +64,12 @@ export const lookupAuthMemberLiked = (memberId: T, targetRefId: string = '$_id')
 	};
 };
 
-interface LookupAuthMemberFollowed{
+interface LookupAuthMemberFollowed {
 	followerId: T;
 	followingId: string;
 }
-export const lookupAuthMemberFollowed = (input:LookupAuthMemberFollowed ) => {
-	const { followingId, followerId} = input;
+export const lookupAuthMemberFollowed = (input: LookupAuthMemberFollowed) => {
+	const { followingId, followerId } = input;
 	return {
 		$lookup: {
 			from: 'follows',
@@ -100,7 +99,6 @@ export const lookupAuthMemberFollowed = (input:LookupAuthMemberFollowed ) => {
 		},
 	};
 };
-
 
 export const lookupMember = {
 	$lookup: {
@@ -135,5 +133,14 @@ export const lookupFavorite = {
 		localField: 'favoriteProperty.memberId',
 		foreignField: '_id',
 		as: 'favoriteProperty.memberData',
+	},
+};
+
+export const lookupVisit = {
+	$lookup: {
+		from: 'members',
+		localField: 'visitedProperty.memberId',
+		foreignField: '_id',
+		as: 'visitedProperty.memberData',
 	},
 };
