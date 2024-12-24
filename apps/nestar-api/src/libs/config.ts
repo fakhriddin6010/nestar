@@ -46,7 +46,8 @@ export const lookupAuthMemberLiked = (memberId: T, targetRefId: string = '$_id')
 				{
 					$match: {
 						$expr: {
-							$and: [{ $eq: ['$likeRefId', '$$localLikeRefId'] }, { $eq: ['$memberId', '$$localMemberId'] }],
+							$and: [{ $eq: ['$likeRefId', '$$localLikeRefId'] },
+							{ $eq: ['$memberId', '$$localMemberId'] }],
 						},
 					},
 				},
@@ -125,5 +126,14 @@ export const lookupFollowerData = {
 		localField: 'followerId',
 		foreignField: '_id',
 		as: 'followerData',
+	},
+};
+
+export const lookupFavorite = {
+	$lookup: {
+		from: 'members',
+		localField: 'favoriteProperty.memberId',
+		foreignField: '_id',
+		as: 'favoriteProperty.memberData',
 	},
 };
