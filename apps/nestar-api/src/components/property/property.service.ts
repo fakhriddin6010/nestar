@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import moment from 'moment';
 import { Model, ObjectId } from 'mongoose';
 import { lookupAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { LikeInput } from '../../libs/dto/like/like.input';
 import { Properties, Property } from '../../libs/dto/property/property';
 import {
 	AgentPropertiesInquiry,
@@ -13,14 +14,13 @@ import {
 } from '../../libs/dto/property/property.input';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import { Direction, Message } from '../../libs/enums/common.enum';
+import { LikeGroup } from '../../libs/enums/like.enum';
 import { PropertyStatus } from '../../libs/enums/property.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { LikeService } from '../like/like.service';
 import { MemberService } from '../member/member.service';
 import { ViewService } from '../view/view.service';
-import { LikeInput } from '../../libs/dto/like/like.input';
-import { LikeGroup } from '../../libs/enums/like.enum';
 
 @Injectable()
 export class PropertyService {
@@ -74,8 +74,6 @@ export class PropertyService {
 		// meLiked
 		targetProperty.memberData = await this.memberService.getMember(null, targetProperty.memberId);
 		return targetProperty;
-
-		
 	}
 
 	public async propertyStatsEditor(input: StatisticModifier): Promise<Property> {
@@ -158,9 +156,9 @@ export class PropertyService {
 		} = input.search;
 
 		if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
-		if (locationList) match.propertyLocation = { $in: locationList };
-		if (roomsList) match.propertyRooms = { $in: roomsList };
-		if (bedsList) match.propertyBeds = { $in: bedsList };
+		if (locationList && locationList) match.propertyLocation = { $in: locationList };
+		if (roomsList && roomsList) match.propertyRooms = { $in: roomsList };
+		if (bedsList && bedsList) match.propertyBeds = { $in: bedsList };
 		if (typeList) match.propertyType = { $in: typeList };
 
 		if (pricesRange) match.propertyPrice = { $gte: pricesRange.start, $lte: pricesRange.end };
@@ -175,13 +173,13 @@ export class PropertyService {
 		}
 	}
 
-	public async getFavorites(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties>{
-		return await this.likeService.getFavoriteProperties(memberId, input)
-	};
+	public async getFavorites(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
+		return await this.likeService.getFavoriteProperties(memberId, input);
+	}
 
-	public async getVisited(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties>{
-		return await this.viewService.getVisitedProperties(memberId, input)
-	};
+	public async getVisited(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
+		return await this.viewService.getVisitedProperties(memberId, input);
+	}
 
 	public async getAgentProperties(memberId: ObjectId, input: AgentPropertiesInquiry): Promise<Properties> {
 		const { propertyStatus } = input.search;
